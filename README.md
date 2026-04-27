@@ -25,7 +25,7 @@
 
 ## 演習の進め方
 
-1. masterブランチに戻る
+1. mainブランチに戻る
   ```bash
   $ cd B4Lecture-2026
   $ git checkout main
