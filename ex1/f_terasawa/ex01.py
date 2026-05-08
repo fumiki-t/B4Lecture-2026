@@ -1,6 +1,8 @@
 import json
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation # pltで描画した図をパラパラ漫画みたいに動かすやつ
+from mplsoccer import Pitch
+
 
 # ==========================================
 # 定数（各データのパス）
@@ -111,19 +113,20 @@ def create_tracking_animation(data, player_team_map, home_name, away_name, outpu
         num_frames (int): 描画するフレーム数
     """
     # アニメーションの描画設定
-    fig, ax = plt.subplots(figsize=(10, 7)) # figは全体の図、axはその中のグラフ部分
+    pitch = Pitch(pitch_type='skillcorner', pitch_length=105, pitch_width=68, 
+                  pitch_color='forestgreen', line_color='white')
+    
+    fig, ax = pitch.draw(figsize=(10, 7)) # ピッチを描画して fig と ax を取得
 
     # 毎フレーム呼び出される更新関数（この関数の中にネストしておくことで、引数なしで変数を参照できます）
     def update(frame_idx):
         # 前のフレームの描画を一度消去する
         ax.cla()
         
-        # ピッチの背景と枠の再設定
-        ax.set_facecolor('forestgreen')
-        ax.set_xlim(-60, 60)
-        ax.set_ylim(-40, 40)
-        ax.set_title(f"Frame: {frame_idx}") # 上部に現在のフレーム数を表示
-        
+        # 毎フレームピッチを再描画
+        pitch.draw(ax=ax) 
+        ax.set_title(f"Frame: {frame_idx}")
+
         # 指定フレームのデータを取得
         frame_data = data[frame_idx]
         
@@ -134,12 +137,12 @@ def create_tracking_animation(data, player_team_map, home_name, away_name, outpu
             
             # チームごとに色分けしてプロット
             if team == 'home':
-                ax.scatter(obj['x'], obj['y'], c='red', edgecolors='white', label=home_name)
+                ax.scatter(obj['x'], obj['y'], c='red', edgecolors='white', label=home_name, zorder=10)
             elif team == 'away':
-                ax.scatter(obj['x'], obj['y'], c='black', edgecolors='white', label=away_name)
+                ax.scatter(obj['x'], obj['y'], c='black', edgecolors='white', label=away_name, zorder=10)
             elif team == 'ball':
-                ax.scatter(obj['x'], obj['y'], c='yellow', edgecolors='black', label='Ball')
-
+                ax.scatter(obj['x'], obj['y'], c='yellow', edgecolors='black', label='Ball', zorder=10)
+                
         # 凡例の描画（データがある場合のみ）
         handles, labels = ax.get_legend_handles_labels() # get_legend_handles_labels() は現在のグラフに描画されている要素から凡例のハンドルとラベルを取得する関数
         if handles:
